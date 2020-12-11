@@ -32,7 +32,7 @@ cat >> /etc/hosts <<EOF
 10.4.7.73  node2
 EOF
 
-k8s相关优化
+#k8s相关优化
 cat >/etc/sysctl.d/k8s.conf <<EOF
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
