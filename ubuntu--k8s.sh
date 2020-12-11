@@ -17,7 +17,6 @@ deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe 
 deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
 
 
-
 #禁用防火墙
 systemctl stop firewalld && systemctl disable firewalld
 #禁用selinux
@@ -75,7 +74,6 @@ cat >>/etc/docker/daemon.json<<EOF
       "log-opts": {"max-size":"100m", "max-file":"3"}
 }
 EOF
-
 
 
 ```
