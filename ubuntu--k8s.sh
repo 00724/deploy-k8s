@@ -57,6 +57,42 @@ done
 swapoff -a
 
 
+#内核限制相关优化
+echo "root soft nofile 1024000" >>/etc/security/limits.conf
+echo "root hard nofile 1024000" >>/etc/security/limits.conf
+echo "root soft core unlimited" >>/etc/security/limits.conf
+echo "root soft stack 1024000" >>/etc/security/limits.conf
+echo "* soft nofile 1024000" >>/etc/security/limits.conf
+echo "* hard nofile 1024000" >>/etc/security/limits.conf
+echo "* soft core unlimited" >>/etc/security/limits.conf
+echo "* soft stack 1024000" >>/etc/security/limits.conf
+tail -8 /etc/security/limits.conf
+
+#proc文件系统优化
+
+cat >>/etc/sysctl.conf<<EOF
+net.ipv4.ip_forward=1
+net.ipv4.conf.default.accept_source_route=0
+kernel.sysrq=0
+kernel.core_uses_pid=1
+net.ipv4.tcp_syncookies=1
+kernel.msgmnb=65536
+kernel.msgmax=65536
+kernel.shmmax=68719476736
+kernel.shmall=4294967296
+net.ipv4.tcp_keepalive_time=1200
+net.ipv4.ip_local_port_range=1024 65535
+net.ipv4.conf.all.rp_filter=0
+net.ipv4.conf.default.rp_filter=0
+net.ipv4.conf.all.arp_announce=2
+net.ipv4.conf.default.arp_announce=2
+net.ipv4.ip_local_reserved_ports=30000-32767
+net.bridge.bridge-nf-call-iptables=1
+net.bridge.bridge-nf-call-arptables=1
+net.bridge.bridge-nf-call-ip6tables=1
+EOF
+
+
 #安装docker
 apt-get update
 apt-get -y install apt-transport-https ca-certificates curl software-properties-common
