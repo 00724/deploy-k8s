@@ -289,3 +289,52 @@ echo $(kubectl -n kube-system get secret $(kubectl -n kube-system get secret | g
 
 #安装ingress-nginx
 kubectl apply -f https://kuboard.cn/install-script/v1.19.x/nginx-ingress.yaml
+
+
+#每个master节点更新证书
+kubeadm alpha certs check-expiration
+kubeadm alpha certs renew all
+
+#主节点重启相关容器
+docker ps |grep -E 'k8s_kube-apiserver|k8s_kube-controller-manager|k8s_kube-scheduler|k8s_etcd_etcd' | awk -F ' ' '{print $1}' |xargs docker restart
+
+#查看各个证书时间
+for i in `find /etc/kubernetes/pki -maxdepth 2 -name "*.crt"`;do openssl x509 -in $i -text -noout| grep Not;echo ======================$i===============;done
+
+
+```
+#升级k8s
+#所有节点安装高版本
+apt-cache madison kubeadm
+apt-get install -y kubelet=1.18.10-00 kubeadm=1.18.10-00 kubectl=1.18.10-00
+
+#驱逐主节点pod
+kubectl drain master01-71.host.com --ignore-daemonsets
+
+#一个master创建升级计划，升级
+kubeadm upgrade plan
+kubeadm upgrade apply v1.18.10
+
+#接触驱逐pod
+kubectl uncordon master01-71.host.com
+
+#其他master节点
+kubectl upgrade node
+
+#所有master重启daemon进程和kubelct
+systemctl daemon-reload 
+systemctl restart kubelet.service
+
+#升级node节点
+#驱逐node节点pod
+kubectl drain node01-72.host.com --ignore-daemonsets --delete-local-data
+
+#升级node节点
+kubeadm upgrade node
+
+#解除驱逐的pod
+kubectl uncordon node01-72.host.com
+
+#所有node节点重启daemon进程和kubelct
+systemctl daemon-reload 
+systemctl restart kubelet.service
