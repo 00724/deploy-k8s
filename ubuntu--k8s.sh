@@ -1,5 +1,3 @@
-
-
 #ubuntu更换阿里云镜像源
 deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
 deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
@@ -278,3 +276,16 @@ kubectl apply -f kubedashboard.yaml
 
 #更改kube-proxy为ipvs模式
 kubectl edit cm kube-proxy -n kube-system
+
+
+
+
+#安装kuboard 2.0
+kubectl apply -f https://kuboard.cn/install-script/kuboard.yaml
+kubectl apply -f https://addons.kuboard.cn/metrics-server/0.3.7/metrics-server.yaml
+
+#登录kuboard
+echo $(kubectl -n kube-system get secret $(kubectl -n kube-system get secret | grep kuboard-user | awk '{print $1}') -o go-template='{{.data.token}}' | base64 -d)
+
+#安装ingress-nginx
+kubectl apply -f https://kuboard.cn/install-script/v1.19.x/nginx-ingress.yaml
