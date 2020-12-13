@@ -1,27 +1,18 @@
 #ubuntu更换阿里云镜像源
 deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
 deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
-
 deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
 deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
-
 deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
 deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
-
 deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
 deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
-
 deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
 deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
 
 
 #禁用防火墙
 systemctl stop firewalld && systemctl disable firewalld
-#禁用selinux
-#临时修改
-setenforce 0
-#永久修改，重启服务器后生效
-sed -i '7s/enforcing/disabled/' /etc/selinux/config
 
 
 #k8s相关优化
@@ -304,6 +295,9 @@ for i in `find /etc/kubernetes/pki -maxdepth 2 -name "*.crt"`;do openssl x509 -i
 
 ```
 #升级k8s
+#查看k8s版本
+kubectl version | grep Server
+
 #所有节点安装高版本
 apt-cache madison kubeadm
 apt-get install -y kubelet=1.18.10-00 kubeadm=1.18.10-00 kubectl=1.18.10-00
