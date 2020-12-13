@@ -25,12 +25,6 @@ setenforce 0
 #永久修改，重启服务器后生效
 sed -i '7s/enforcing/disabled/' /etc/selinux/config
 
-#节点解析
-cat >> /etc/hosts <<EOF
-10.4.7.71  master
-10.4.7.72  node1
-10.4.7.73  node2
-EOF
 
 #k8s相关优化
 cat >/etc/sysctl.d/k8s.conf <<EOF
@@ -125,6 +119,17 @@ sed -i.bak "s#^ExecStart=/usr/bin/dockerd.*#ExecStart=/usr/bin/dockerd -H fd:// 
 #重启docker
 systemctl daemon-reload && systemctl restart docker
 ```
+
+
+
+
+## 安装kubernetes
+#节点解析
+cat >> /etc/hosts <<EOF
+10.4.7.71  master
+10.4.7.72  node1
+10.4.7.73  node2
+EOF
 
 
 #安装kubelet kubeadm kubectl
