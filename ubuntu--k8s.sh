@@ -138,7 +138,7 @@ curl http://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add -
 bash -c 'cat  << EOF >/etc/apt/sources.list.d/kubernetes.list
 deb http://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
 EOF'
-
+apt-get update
 apt-get install -y kubelet=1.18.6-00 kubeadm=1.18.6-00 kubectl=1.18.6-00
 
 
