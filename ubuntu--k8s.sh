@@ -206,18 +206,34 @@ mkdir -p $HOME/.kube
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
 
+#node节点加入集群
+kubeadm join 10.4.7.71:6443 --token ktix7u.ah9pdxas4tgcgcsx --discovery-token-ca-cert-hash sha256:c2ff6e4f5f6f1837052fdcab16e739d019c8db1e4e50e86d6b35168b6814f12b
 
 
 #安装calico
 wget https://docs.projectcalico.org/v3.8/manifests/calico.yaml
+#将文件中的625行改为如下，因为在上边kubeadm-config.yaml配置文件中指定了Pod IP
+625行 value: "172.16.0.1/16"
+
 kubectl apply -f calico.yaml
 
 
-
+```
 #查看证书时间
 cd /etc/kubernetes/pki/
 openssl x509 -in apiserver.crt -text -noout | grep Not
-打标签
+
+#查看token
+#kubeadm token list
+
+#查看sha256
+#openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+
+#同时查看token和sha256
+#kubeadm token create --print-join-command
+```
+
+#打标签
 kubectl label node ks-node1-72 node-role.kubernetes.io/node=
 kubectl label node ks-node2-73 node-role.kubernetes.io/node=
 
