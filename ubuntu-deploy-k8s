@@ -332,3 +332,15 @@ kubectl uncordon node01-72.host.com
 #所有node节点重启daemon进程和kubelct
 systemctl daemon-reload 
 systemctl restart kubelet.service
+
+
+#k8s限制节点的pod数量
+#增加变量，变量传给execstart启动项
+vim /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+```
+Environment="KUBELET_NODE_MAX_PODS=--max-pods=300"
+ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS $KUBELET_NODE_MAX_PODS
+```
+#重启daemon进程和kubeletkube服务
+systemctl daemon-reload
+systemctl restart kubelet
