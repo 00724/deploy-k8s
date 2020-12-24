@@ -226,6 +226,8 @@ openssl x509 -in apiserver.crt -text -noout | grep Not
 kubectl label node ks-node1-72 node-role.kubernetes.io/node=
 kubectl label node ks-node2-73 node-role.kubernetes.io/node=
 
+#查看所有节点的标签
+kubectl describe nodes -A  | grep -A 5 Labels
 
 
 #安装dashboard
