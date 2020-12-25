@@ -1,0 +1,59 @@
+#使用helm安装nginx
+#ingress官网文档
+https://kubernetes.github.io/ingress-nginx/deploy/
+
+#1、安装helm
+#helm在github地址
+https://github.com/helm/helm/releases
+#下载地址
+https://get.helm.sh/helm-v3.4.2-linux-amd64.tar.gz
+https://get.helm.sh/helm-v3.4.1-linux-amd64.tar.gz
+https://get.helm.sh/helm-v3.4.0-linux-amd64.tar.gz
+
+#2、安装helm
+cd /opt
+wget https://get.helm.sh/helm-v3.4.0-linux-amd64.tar.gz
+tar xf helm-v3.4.2-linux-amd64.tar.gz
+mv linux-amd64/helm /usr/local/bin/
+helm version
+
+#3、添加ingress-nginx仓库
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm pull ingress-nginx/ingress-nginx
+
+#4、修改ingress-nginx配置文件
+vim values.yaml
+
+#13行仓库地址，或者dockerhub下载镜像
+repository: registry.cn-beijing.aliyuncs.com/dotbalo/controller
+
+#15行注释掉sha256验证
+#digest: sha256:
+
+#45行DNS策略集群优先，否则ingress找不到集群中的services
+dnsPolicy: ClusterFirstWithHostNet
+
+#54行网路模式使用hostnetwork，速度快一些
+hostNetwork: true
+
+#144行部署模式改成Daemonset
+kind: DaemonSet
+
+#242安装到指定的node，需要给node打标签（可选）
+nodeSelector:
+  kubernetes.io/os: linux
+
+#390行负载均衡类型改为ClusterIP
+type: ClusterIP
+
+#483行修改镜像地址或dockerhub下载镜像
+repository: docker.io/jettech/kube-webhook-certgen
+
+#创建ingress的namespace
+kubectl create ns ingress
+
+#在当前目录安装ingress-nginx
+helm install ingress-nginx -n ingress .
+
+#检查pod情况
+kubectl get pods -A | grep ingress
