@@ -28,3 +28,8 @@ rancher/metrics-server:v0.3.6
 #安装
 kubectl apply -f .
 kubectl get pods -A | grep metrics-server
+
+
+#查看采集的信息
+kubectl top nodes
+kubectl top pods -A
