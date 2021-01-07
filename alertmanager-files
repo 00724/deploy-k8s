@@ -1,0 +1,37 @@
+```
+alertmanager相关配置
+使用operator安装prometheus时alertmanager的configmap书写方式
+此配置文件配合Prometheus-alert报警平台
+```
+#prometheus-alert代码仓库
+https://gitee.com/feiyu563/PrometheusAlert
+
+#prometheus-alert镜像版本
+docker pull feiyu563/prometheus-alert:4.1
+
+
+#configmap---alertmanager-main
+global:
+  resolve_timeout: 1m
+route:
+  group_by: ['alertname']
+  group_wait: 1m
+  group_interval: 20s
+  repeat_interval: 1m
+  receiver: 'prometheusalert-dingding'
+  routes:
+  - receiver: 'prometheusalert-dingding'
+    group_wait: 10s
+receivers:
+- name: 'prometheusalert-dingding'
+  webhook_configs:
+  - url: 'http://[prometheus-alert-center]:8080/prometheusalert?type=dd&tpl=dd&ddurl=https://oapi.dingtalk.com/robot/send?access_token=33aac296cb45ff1ec727a9eedc1ac2bfbdac1c767f1135e545045ae29509f868'
+
+
+
+#PrometheusAlert---configmap
+#---------------------↓webhook-----------------------
+#是否开启钉钉告警通道,可同时开始多个通道0为关闭,1为开启
+open-dingding=1
+#默认钉钉机器人地址
+ddurl= https://oapi.dingtalk.com/robot/send?access_token=33aac296cb45ff1ec727a9eedc1ac2bfbdac1c767f1135e545045ae29509f868
