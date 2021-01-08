@@ -3,7 +3,7 @@ alertmanager相关配置
 使用operator安装prometheus时alertmanager的configmap书写方式
 此配置文件配合Prometheus-alert报警平台
 ```
-#prometheus-alert代码仓库
+#prometheus-alert代码仓库最新分支有ingress配置，旧分支没有
 https://gitee.com/feiyu563/PrometheusAlert
 
 #prometheus-alert镜像版本
