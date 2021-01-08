@@ -17,5 +17,5 @@ spec:
     protocol: TCP
 
 
-
-    #修改 kube-scheduler 配置，/etc/kubernetes/manifests/kube-scheduler.yaml，--bind-address=0.0.0.0  #改为0.0.0.0
+#修改 kube-scheduler 配置，/etc/kubernetes/manifests/kube-scheduler.yaml，
+#--bind-address=0.0.0.0  #改为0.0.0.0
