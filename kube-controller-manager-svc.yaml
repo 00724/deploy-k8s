@@ -15,3 +15,7 @@ spec:
     port: 10251
     targetPort: 10251
     protocol: TCP
+
+
+#修改 kube-controller-manager 配置，/etc/kubernetes/manifests/kube-controller-manager.yaml，
+#--bind-address=0.0.0.0  #改为0.0.0.0
