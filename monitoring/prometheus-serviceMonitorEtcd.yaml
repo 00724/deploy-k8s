@@ -9,7 +9,7 @@ spec:
   jobLabel: k8s-app
   endpoints:
   - port: port
-    interval: 10s
+    interval: 15s
   selector:
     matchLabels:
       k8s-app: etcd
