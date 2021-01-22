@@ -6,7 +6,7 @@ metadata:
   labels:
     app: pod-jvm
 spec:
-  #jobLabel: k8s-app
+  #jobLabel: app
   endpoints:
   - port: jvm-monitor
     interval: 15s
