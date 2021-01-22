@@ -1757,7 +1757,7 @@ spec:
       for: 10m
       labels:
         severity: warning
-
+#添加jvm报警规则
   - name: JVM-Monitor
     rules:
     - alert: JvmMemoryFillingUp

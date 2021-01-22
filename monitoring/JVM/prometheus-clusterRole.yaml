@@ -13,7 +13,7 @@ rules:
   - /metrics
   verbs:
   - get
-
+#跨namespace监控,添加一条rbac认证
 - apiGroups:
   - ""
   resources:

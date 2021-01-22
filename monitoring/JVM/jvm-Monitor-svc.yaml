@@ -1,3 +1,4 @@
+#为每个namespave创建一个SVC即可，在需要被监控的java程序的dp的yaml里面为pod添加labels，即可依靠svc自动发现到pod
 apiVersion: v1
 kind: Service
 metadata:
