@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: test456
+  name: jvm-monitor
+  labels:
+    app: pod-jvm
+spec:
+  selector:
+    app: pod-jvm
+  ports:
+  - name: jvm-monitor
+    port: 12346
+    targetPort: 12346

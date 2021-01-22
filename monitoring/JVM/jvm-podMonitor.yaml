@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: jvm-monitor
+  namespace: monitoring
+  labels:
+    app: pod-jvm
+spec:
+  #jobLabel: k8s-app
+  endpoints:
+  - port: jvm-monitor
+    interval: 15s
+    scheme: http
+    path: '/metrics'
+  selector:
+    matchLabels:
+      app: pod-jvm
+  namespaceSelector:
+    any: true
