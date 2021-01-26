@@ -1,0 +1,38 @@
+#Redis-Alert
+  - name: Redis instance is down
+    rules:
+    - alert: RedisDown
+      expr: redis_up == 0
+      for: 0m
+      labels:
+        severity: critical
+      annotations:
+        summary: Redis down (instance {{ $labels.instance }})
+        description: |
+          Redis instance is down
+          Pod={{ $labels.pod }}
+  - name: Redis instance has too many connections
+    rules:
+    - alert: RedisTooManyConnections
+      expr: redis_connected_clients > 100
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: Redis too many connections (instance {{ $labels.instance }})
+        description: |
+          Redis instance has too many connections
+          VALUE = {{ $value }}
+          LABELS: {{ $labels }}
+  - name: Redis is running out of system memory (> 40%) 
+    rules:
+    - alert: RedisOutOfSystemMemory
+      expr: redis_memory_used_bytes / redis_total_system_memory_bytes * 100 > 40
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: Redis out of system memory (instance {{ $labels.instance }})
+        description: |
+          Redis is running out of system memory (> 40%)
+          VALUE = {{ $value }}\n  LABELS: {{ $labels }}
