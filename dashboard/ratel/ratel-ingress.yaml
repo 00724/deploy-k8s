@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ratel
+  namespace: kube-system
+spec:
+  rules:
+  - host: krm.test.com
+    http:
+      paths:
+      - backend:
+          serviceName: ratel
+          servicePort: 8888
+        path: /

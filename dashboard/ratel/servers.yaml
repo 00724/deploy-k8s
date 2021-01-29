@@ -1,0 +1,8 @@
+- serverName: 'test1'
+  serverAddress: 'https://10.4.7.71:6443'
+  serverAdminUser: 'admin'
+  serverAdminPassword: '11111111'
+  serverAdminToken: 'null'
+  serverDashboardUrl: "https://10.4.7.72:32266/#"
+  production: 'false'
+  kubeConfigPath: "/mnt/test1.config"
