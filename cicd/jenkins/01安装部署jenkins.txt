@@ -4,11 +4,14 @@ ln -s /usr/local/src/jdk-11.0.2/ /usr/local/src/jdk
 source /etc/profile.d/jdk.sh
 ln -s /usr/local/src/jdk/bin/* /usr/bin/
 
-cat /etc/profile.d/jdk.sh 
+cat >/etc/profile.d/jdk.sh <<EOF
 JAVA_HOME=/usr/local/src/jdk
-CLASSPATH=$JAVA_HOME/lib
-PATH=$JAVA_HOME/bin:$PATH
+CLASSPATH=\$JAVA_HOME/lib
+PATH=\$JAVA_HOME/bin:\$PATH
 export PATH JAVA_HOME CLASSPATH
+EOF
+
+source  /etc/profile.d/jdk.sh
 
 #2、安装jenkins
 yum install -y https://mirrors.tuna.tsinghua.edu.cn/jenkins/redhat-stable/jenkins-2.263.3-1.1.noarch.rpm
