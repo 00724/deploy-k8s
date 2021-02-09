@@ -1,4 +1,5 @@
 
+字符串常用方法
 //contains()--是否包含特定的内容，返回值true/false
 groovy:000> "你好".contains('好');
 ===> true
@@ -34,3 +35,7 @@ groovy:000> 'devops' - 'ops'
 //加减符号对数字，计算器
 groovy:000> 20 -5 
 ===> 15
+
+//按字符分割
+groovy:000> 'host1,host2,host3'.split(',');
+===> [host1, host2, host3]
