@@ -1,0 +1,3 @@
+[submodule "cicd/jenkinslib"]
+	path = cicd/jenkinslib
+	url = https://gitee.com/k9s/jenkinslib.git
