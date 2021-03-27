@@ -1,0 +1,153 @@
+# webapp服务
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp
+  namespace: test123
+  labels:
+    app: webapp
+spec:
+  selector:
+    app: webapp
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    name: http
+
+#ingress
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata: 
+  name: webapp
+  namespace: test123
+spec:
+  rules:
+  - host: logtest.code404.cn
+    http:
+      paths:
+      - path: /
+        backend: 
+          serviceName: webapp
+          servicePort: 80
+
+#定义日志收集相关配置的一个configmap
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+  namespace: test123
+  labels:
+    k8s-app: filebeat
+data:
+  filebeat.yml: |-
+    filebeat.inputs:
+    - type: log
+      paths:
+        - /logm/*.log
+        - /logm/*.log
+        - /logm/*/*.log
+        - /logm/*/*/*.log
+        - /logm/*/*/*/*.log
+        - /logm/*/*/*/*/*.log
+      multiline.pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}"
+      multiline.negate: true
+      multiline.match: after
+      tail_files: true
+      fields:
+        POD_NAME: '${POD_NAME}'
+        POD_IP: '${POD_IP}'
+        PROJ_ENV: '${PROJ_ENV}'
+    setup.ilm.enabled: false
+    setup.template.pattern: true
+    setup.template.name: "${PROJ_NAME}-${PROJ_ENV}"
+    setup.template.pattern: "${PROJ_NAME}-${PROJ_ENV}-*"
+    output.elasticsearch:
+      hosts: ["${ES_HOST-1}:9200"]
+      index: "${PROJ_NAME}-${PROJ_ENV}-%{+yyyy.MM.dd}"
+      ilm.enabled: false
+
+# deployment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+  namespace: test123
+spec:
+  replicas: 1
+  minReadySeconds: 10     #滚动升级15s后标志pod准备就绪
+  strategy:
+    rollingUpdate:        #replicas为2, 升级过程中pod个数在1-3个之间
+      maxSurge: 1         #滚动升级时会先启动1个pod
+      maxUnavailable: 1   #滚动升级时允许pod处于Unavailable的最大个数
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      terminationGracePeriodSeconds: 30 #30秒内优雅关闭程序
+      containers:
+      - image: registry.cn-beijing.aliyuncs.com/openacl/filebeat:7.2.0-es-y
+        name: filebeat
+        args: [
+          "-c", "/etc/filebeat/filebeat.yml",
+          "-e",
+        ]
+        env:
+        - name: ES_HOST-1
+          value: 10.4.7.139
+        - name: PROJ_NAME
+          value: webapp
+        - name: PROJ_ENV
+          value: dev
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        #- name: NS
+        #  valueFrom:
+        #    filedRef:
+        #      apiVersion: v1
+        #      filePath: metadata.namespace
+        securityContext:
+          runAsUser: 0
+        resources:
+          limits:
+            memory: 50Mi
+          requests:
+            cpu: 200m
+            memory: 50Mi
+        volumeMounts:
+        - name: config               #将configmap的内容放到容器本地目录
+          mountPath: /etc/filebeat/
+        - name: logm       #同一个pod内的两个应用共享目录logm, 一个写一个读
+          mountPath: /logm
+      - name: webapp
+        image: nginx:1.16  #提供具体服务的app镜像
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: logm       #指定挂在目录到logm
+          mountPath: /var/log/nginx/
+      volumes:
+      - name: logm         #定义logm为EmptyDir类型挂载目录
+        emptyDir: {}
+      - name: config
+        configMap:
+          name: filebeat-config  #使用前面定义的configmap
+          items:
+          - key: filebeat.yml
+            path: filebeat.yml

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-monitor
+  namespace: test123
+  labels:
+    app: redis
+spec:
+  type: ClusterIP
+  ports:
+    - name: redis-monitor
+      port: 9121
+      protocol: TCP
+      targetPort: 9121
+  selector:
+    app: redis

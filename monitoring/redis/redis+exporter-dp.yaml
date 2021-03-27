@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cache03
+  namespace: test456
+  labels:
+    app: redis
+    k8s-app: cache03
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3 
+  selector:
+    matchLabels:
+      app: redis
+      k8s-app: cache03
+  strategy:
+    rollingUpdate:
+      maxSurge: 25% # 最大额外可以存在的副本数，可以为百分比，也可以为整数
+      maxUnavailable: 25% # 示在更新过程中能够进入不可用状态的 Pod 的最大值，可以为百分比，也可以为整数
+    type: RollingUpdate # 滚动更新策略
+  template:
+    metadata:
+      annotations:
+      labels:
+        app: redis
+        k8s-app: cache03
+    spec:
+      containers:
+      - name: redis
+        image: redis:4.0.14
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 6379
+            protocol: TCP
+        env:
+          - name: TZ
+            value: Asia/Shanghai
+      - name: redis-exporter
+        image: oliver006/redis_exporter:v1.16.0-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 9121
+            protocol: TCP
+        env:
+          - name: TZ
+            value: Asia/Shanghai
+          - name: REDIS_ADDR
+            value: 'redis://localhost:6379'
+        args:
+          - -include-system-metrics=true

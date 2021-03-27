@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cache03
+  namespace: test456
+  labels:
+    k8s-app: cache03
+spec:
+  type: ClusterIP
+  ports:
+    - name: cache03
+      port: 6793
+      protocol: TCP
+      targetPort: 6379
+  selector:
+    k8s-app: cache03

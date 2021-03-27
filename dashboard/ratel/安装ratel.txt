@@ -1,0 +1,2 @@
+kubectl create secret generic ratel-config  --from-file=test1.config --from-file=servers.yaml -n kube-system
+kubectl apply -f .

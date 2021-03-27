@@ -9,7 +9,7 @@
 ##### {{$v.annotations.description}}
 ![Prometheus](https://s4.51cto.com/images/blog/202101/14/ed5f99135ba8d51b479fcf5ab5ab2aa8.png)
 {{else}}
-## [k8s-prod-预警]({{$v.generatorURL}})
+## [k8s-prod预警]({{$v.generatorURL}})
 #### [{{$v.labels.alertname}}]({{$var}})
 ###### 告警级别：{{$v.labels.level}}
 ###### 开始时间：{{GetCSTtime $v.startsAt}}
