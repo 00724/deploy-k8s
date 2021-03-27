@@ -1,0 +1,109 @@
+apiVersion: v1
+data:
+  app.conf: |
+    #---------------------↓全局配置-----------------------
+    appname = PrometheusAlert
+    #监听端口
+    httpport = 8080
+    runmode = dev
+    #开启JSON请求
+    copyrequestbody = true
+    #告警消息标题
+    title=k8s-test
+    #短信告警级别(等于3就进行短信告警) 告警级别定义 0 信息,1 警告,2 一般严重,3 严重,4 灾难
+    messagelevel=3
+    #电话告警级别(等于4就进行语音告警) 告警级别定义 0 信息,1 警告,2 一般严重,3 严重,4 灾难
+    phonecalllevel=4
+    #自动告警抑制(自动告警抑制是默认同一个告警源的告警信息只发送告警级别最高的第一条告警信息,其他消息默认屏蔽,这么做的目的是为了减少相同告警来源的消息数量,防止告警炸弹,0为关闭,1为开启)
+    silent=1
+    
+    #---------------------↓webhook-----------------------
+    #是否开启钉钉告警通道,可同时开始多个通道0为关闭,1为开启
+    open-dingding=1
+    #默认钉钉机器人地址
+    ddurl=https://oapi.dingtalk.com/robot/send?access_token=2ea370c1fa0445b304448686909447ba9d5295a531d74b2e2b81b158610d5c5b
+
+kind: ConfigMap
+metadata:
+  name: prometheus-alert-center-conf
+  namespace: monitoring
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: prometheus-alert-center
+    alertname: prometheus-alert-center
+  name: prometheus-alert-center
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-alert-center
+      alertname: prometheus-alert-center
+  template:
+    metadata:
+      labels:
+        app: prometheus-alert-center
+        alertname: prometheus-alert-center
+    spec:
+      containers:
+      - image: feiyu563/prometheus-alert:4.1
+        name: prometheus-alert-center
+        env:
+        - name: TZ
+          value: "Asia/Shanghai"
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          limits:
+            cpu: 200m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        volumeMounts:
+        - name: prometheus-alert-center-conf-map
+          mountPath: /app/conf/app.conf
+          subPath: app.conf
+      volumes:
+      - name: prometheus-alert-center-conf-map
+        configMap:
+          name: prometheus-alert-center-conf
+          items:
+          - key: app.conf
+            path: app.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    alertname: prometheus-alert-center
+  name: prometheus-alert-center
+  namespace: monitoring
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http
+  selector:
+    app: prometheus-alert-center
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: prometheus-alert-center
+  namespace: monitoring
+spec:
+  rules:
+    - host: alert.code404.cn
+      http:
+        paths:
+          - backend:
+              serviceName: prometheus-alert-center
+              servicePort: 8080
+            path: /    
