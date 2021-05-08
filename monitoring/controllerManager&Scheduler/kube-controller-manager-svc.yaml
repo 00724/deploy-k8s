@@ -16,3 +16,4 @@ spec:
 
 #修改 kube-controller-manager 配置，/etc/kubernetes/manifests/kube-controller-manager.yaml，
 #--bind-address=0.0.0.0  #改为0.0.0.0
+#kubectl get cs 集群组件状态，注销--port=0
