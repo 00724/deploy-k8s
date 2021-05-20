@@ -272,7 +272,8 @@ kubectl edit cm kube-proxy -n kube-system
 
 
 
-
+#一个开源的很好用的k8sweb管理平台kuboard
+#支持支持支持-----https://kuboard.cn
 #安装kuboard 2.0
 kubectl apply -f https://kuboard.cn/install-script/kuboard.yaml
 kubectl apply -f https://addons.kuboard.cn/metrics-server/0.3.7/metrics-server.yaml
