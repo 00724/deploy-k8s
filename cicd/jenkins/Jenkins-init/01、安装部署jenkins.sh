@@ -29,7 +29,13 @@ https://mirrors.tuna.tsinghua.edu.cn/jenkins/updates/update-center.json
 https://mirrors.tuna.tsinghua.edu.cn/jenkins/plugins
 https://plugins.jenkins.io/
 
-#6、添加node节点
+#6、更改清华源地址
+cd /var/jenkins_home/updates
+sed -i 's/http:\/\/updates.jenkins-ci.org\/download/https:\/\/mirrors.tuna.tsinghua.edu.cn\/jenkins/g' default.json 
+sed -i 's/http:\/\/www.google.com/https:\/\/www.baidu.com/g' default.json
+
+
+#7、添加node节点
 wget http://10.4.7.79/jnlpJars/agent.jar
 echo c1dc12322cca956a77bc98df1d5d78c077e5e5559de5299b89bbc5e1977fd235 > secret-file
 java -jar agent.jar -jnlpUrl http://10.4.7.79/computer/build01-78/jenkins-agent.jnlp -secret @secret-file -workDir "/opt/jenkins"
