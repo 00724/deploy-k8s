@@ -75,7 +75,7 @@ metadata:
     helm.sh/chart: ingress-nginx-3.33.0
 ```
 
-3、配置logstash收集日志
+### 3、配置logstash收集日志
 
 ```bash
 #logstash的pipelines配置中指定手机nfs上的日志目录
@@ -97,8 +97,8 @@ output{
 }
 ```
 
-4、kibana展示
+### 4、kibana展示
 
-![索引页](https://images.gitee.com/uploads/images/2021/0711/094458_02b77184_1234125.png "image-20210710152609753.png")
+#### ![索引页](https://images.gitee.com/uploads/images/2021/0711/094458_02b77184_1234125.png "image-20210710152609753.png")
 
-![简单聚合页](https://images.gitee.com/uploads/images/2021/0711/094512_f2f4ba17_1234125.png "image-20210710152632950.png")
+#### ![简单聚合页](https://images.gitee.com/uploads/images/2021/0711/094512_f2f4ba17_1234125.png "image-20210710152632950.png")
