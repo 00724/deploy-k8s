@@ -98,7 +98,5 @@ output{
 ```
 
 4、kibana展示
-
-![image-20210710152609753](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20210710152609753.png)
-
-![image-20210710152632950](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20210710152632950.png)
+![索引页](https://images.gitee.com/uploads/images/2021/0711/094458_02b77184_1234125.png "image-20210710152609753.png")
+![简单聚合页](https://images.gitee.com/uploads/images/2021/0711/094512_f2f4ba17_1234125.png "image-20210710152632950.png")
