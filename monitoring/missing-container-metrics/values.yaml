@@ -1,0 +1,70 @@
+# Default values for missing-container-metrics.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+image:
+  repository: dmilhdef/missing-container-metrics
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "v0.21.0"
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "3001"
+podSecurityContext: {}
+  # fsGroup: 2000
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+useDocker: true
+useContainerd: false
+###添加
+prometheusOperator:
+  podMonitor:
+    # Create a Prometheus Operator PodMonitor resource
+    enabled: true
+    # Namespace defaults to the Release namespace but can be overridden
+    namespace: ""
+    # Additional labels to add to the PodMonitor so it matches the Operator's podMonitorSelector
+    selector:
+      app.kubernetes.io/name: missing-container-metrics
+
+  prometheusRule:
+    # Create a Prometheus Operator PrometheusRule resource
+    enabled: true
+    # Namespace defaults to the Release namespace but can be overridden
+    namespace: ""
+    # Additional labels to add to the PrometheusRule so it matches the Operator's ruleSelector
+    selector:
+      prometheus: k8s
+      role: alert-rules
+    # The rules can be set here. An example is defined here but can be overridden.
+    rules:
+    - alert: ContainerOOMObserved
+      annotations:
+        message: A process in this Pod has been OOMKilled due to exceeding the Kubernetes memory limit at least twice in the last 15 minutes. Look at the metrics to determine if a memory limit increase is required.
+      expr: sum(increase(container_ooms[15m])) by (exported_namespace, exported_pod) > 2
+      labels:
+        severity: warning
+    - alert: ContainerOOMObserved
+      annotations:
+        message: A process in this Pod has been OOMKilled due to exceeding the Kubernetes memory limit at least ten times in the last 15 minutes. Look at the metrics to determine if a memory limit increase is required.
+      expr: sum(increase(container_ooms[15m])) by (exported_namespace, exported_pod) > 10
+      labels:
+        severity: critical
