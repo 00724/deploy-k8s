@@ -179,7 +179,7 @@ kind: ClusterConfiguration
 kubernetesVersion: v1.18.9      
 imageRepository: registry.cn-hangzhou.aliyuncs.com/google_containers
 
-#master地址
+#apiserver地址，也就是master地址，master就一个就写一个，多个可以写master的vip的地址
 controlPlaneEndpoint: "10.4.7.71:6443"      
 networking:
   serviceSubnet: "192.168.0.0/16"        
@@ -272,7 +272,8 @@ kubectl edit cm kube-proxy -n kube-system
 
 
 
-
+#一个开源的很好用的k8sweb管理平台kuboard
+#支持支持支持-----https://kuboard.cn
 #安装kuboard 2.0
 kubectl apply -f https://kuboard.cn/install-script/kuboard.yaml
 kubectl apply -f https://addons.kuboard.cn/metrics-server/0.3.7/metrics-server.yaml

@@ -4,7 +4,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: webapp
-  namespace: test123
+  namespace: test
   labels:
     app: webapp
 spec:
@@ -20,12 +20,13 @@ spec:
 ---
 kind: Ingress
 apiVersion: extensions/v1beta1
+#apiVersion: networking.k8s.io/v1
 metadata: 
   name: webapp
-  namespace: test123
+  namespace: test
 spec:
   rules:
-  - host: logtest.code404.cn
+  - host: test.code404.net
     http:
       paths:
       - path: /
@@ -33,19 +34,22 @@ spec:
           serviceName: webapp
           servicePort: 80
 
-#定义日志收集相关配置的一个configmap
+#filebeat的cm
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: filebeat-config
-  namespace: test123
+  namespace: test
   labels:
     k8s-app: filebeat
 data:
   filebeat.yml: |-
     filebeat.inputs:
     - type: log
+      json.keys_under_root: true
+      json.overwrite_keys: true
+      json.message_key: message
       paths:
         - /logm/*.log
         - /logm/*.log
@@ -70,13 +74,52 @@ data:
       index: "${PROJ_NAME}-${PROJ_ENV}-%{+yyyy.MM.dd}"
       ilm.enabled: false
 
+#nginx.conf的cm
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  namespace: test
+  labels:
+    app: webapp
+data:
+  nginx.conf: |-
+    user  nginx;
+    worker_processes  auto;
+    error_log  /var/log/nginx/error.log warn;
+    pid        /var/run/nginx.pid;
+    events {
+        worker_connections  1024;
+    }
+    http {
+        #include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+        log_format  json  '{"time": "$time_iso8601", "remote_addr": "$remote_addr",'
+                          '"x-forward-for":"$proxy_add_x_forwarded_for", "remote_user": "$remote_user",'
+                          '"bytes_sent": "$bytes_sent", "request_time": "$request_time",'
+                          '"status": "$status", "vhost": "$host", "request_proto": "$server_protocol",'
+                          '"path": "$uri","request_query": "$args", "request_length": "$request_length",'
+                          '"duration": "$request_time", "method": "$request_method", "http_referrer": "$http_referer",'
+                          '"http_user_agent": "$http_user_agent","upstream_addr": "$upstream_addr",'
+                          '"upstream_response_length": "$upstream_response_length",'
+                          '"upstream_response_time": "$upstream_response_time",'
+                          '"upstream_status": "$upstream_status"}';
+        access_log  /var/log/nginx/access.log  json;
+        sendfile        on;
+        #tcp_nopush     on;
+        keepalive_timeout  65;
+        gzip  on;
+        include /etc/nginx/conf.d/*.conf;
+    }
+
 # deployment
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: webapp
-  namespace: test123
+  namespace: test
 spec:
   replicas: 1
   minReadySeconds: 10     #滚动升级15s后标志pod准备就绪
@@ -102,7 +145,7 @@ spec:
         ]
         env:
         - name: ES_HOST-1
-          value: 10.4.7.139
+          value: 10.4.7.100
         - name: PROJ_NAME
           value: webapp
         - name: PROJ_ENV
@@ -131,8 +174,9 @@ spec:
             cpu: 200m
             memory: 50Mi
         volumeMounts:
-        - name: config               #将configmap的内容放到容器本地目录
+        - name: filebeat-config               #将configmap的内容放到容器本地目录
           mountPath: /etc/filebeat/
+          readOnly: true
         - name: logm       #同一个pod内的两个应用共享目录logm, 一个写一个读
           mountPath: /logm
       - name: webapp
@@ -142,12 +186,24 @@ spec:
         volumeMounts:
         - name: logm       #指定挂在目录到logm
           mountPath: /var/log/nginx/
+        - name: nginx-conf
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
       volumes:
       - name: logm         #定义logm为EmptyDir类型挂载目录
         emptyDir: {}
-      - name: config
+      - name: filebeat-config
         configMap:
+          defaultMode: 420
           name: filebeat-config  #使用前面定义的configmap
           items:
           - key: filebeat.yml
             path: filebeat.yml
+      - name: nginx-conf
+        configMap:
+          defaultMode: 420
+          name: nginx-conf
+          items:
+          - key: nginx.conf
+            path: nginx.conf

@@ -2,18 +2,18 @@
 ETCDCTL_API=3 \
 etcdctl \
 snapshot save snap.db \
---endpoints=https://10.4.7.71:2379 \
+--endpoints=https://x.x.x.x:2379 \
 --cacert=/etc/kubernetes/pki/etcd/ca.crt \
 --cert=/etc/kubernetes/pki/etcd/peer.crt \
 --key=/etc/kubernetes/pki/etcd/peer.key
 
 
 
-#恢复etcd方法
+#恢复etcd
 #1、停止kubelet
 systemctl stop kubelet.service 
 
-#2、停止apt-server和etcd相关容器
+#2、停止api-server和etcd相关容器
 docker stop `docker ps | grep api | awk '{print $1}'`
 docker stop `docker ps | grep etcd | awk '{print $1}'`
 
@@ -25,7 +25,7 @@ ETCDCTL_API=3 \
 etcdctl \
 snapshot restore /root/snap.db \
 --data-dir=/var/lib/etcd \
---endpoints=https://10.4.7.71:2379 \
+--endpoints=https://x.x.x.x:2379 \
 --cacert=/etc/kubernetes/pki/etcd/ca.crt \
 --cert=/etc/kubernetes/pki/etcd/peer.crt \
 --key=/etc/kubernetes/pki/etcd/peer.key
@@ -63,3 +63,12 @@ get /registry/configmaps/kube-system/kube-flannel-cfg
 
 
 ps：在node节点上执行即可，安装一个etcd-clinet就可以执行etcdctl命令了
+
+
+
+
+# 删除ingress 中的名为ingress-ingress-nginx-controller-4gdww 的pod
+ETCDCTL_API=3 etcdctl del /registry/pods/ingress/ingress-ingress-nginx-controller-4gdww --endpoints=https://10.4.7.51:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key
+
+# 删除需要删除的NAMESPACE
+ETCDCTL_API=3 etcdctl del /registry/namespaces/ingress --endpoints=https://10.4.7.51:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key

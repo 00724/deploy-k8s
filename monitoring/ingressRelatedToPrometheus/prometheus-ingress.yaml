@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    k8s.kuboard.cn/workload: prometheus-k8s
+  labels:
+    app: prometheus
+    prometheus: k8s
+  name: prometheus-k8s
+  namespace: monitoring
+spec:
+  rules:
+    - host: jk.code404.cn
+      http:
+        paths:
+          - backend:
+              serviceName: prometheus-k8s
+              servicePort: 9090
+            path: /

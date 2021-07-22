@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    k8s.kuboard.cn/workload: monitoring
+  labels:
+    app: grafana
+  name: grafana
+  namespace: monitoring
+spec:
+  rules:
+    - host: gr.code404.cn
+      http:
+        paths:
+          - backend:
+              serviceName: grafana
+              servicePort: 3000
+            path: /

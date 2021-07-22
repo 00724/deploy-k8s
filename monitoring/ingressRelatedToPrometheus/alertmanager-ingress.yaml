@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    k8s.kuboard.cn/workload: alertmanager
+  labels:
+    app: alertmanager
+  name: alertmanager
+  namespace: monitoring
+spec:
+  rules:
+    - host: alertmanager.code404.cn
+      http:
+        paths:
+          - backend:
+              serviceName: alertmanager-main
+              servicePort: 9093
+            path: /

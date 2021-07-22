@@ -24,8 +24,9 @@ helm pull ingress-nginx/ingress-nginx
 #4、修改ingress-nginx配置文件
 vim values.yaml
 
-#13行仓库地址，或者dockerhub下载镜像
-repository: registry.cn-beijing.aliyuncs.com/dotbalo/controller
+#13、14行仓库地址，或者dockerhub下载镜像
+repository: registry.cn-beijing.aliyuncs.com/openacl/ingress-nginx-controller
+tag: "v0.45.0"
 
 #15行注释掉sha256验证
 #digest: sha256:
@@ -46,8 +47,13 @@ nodeSelector:
 #390行负载均衡类型改为ClusterIP
 type: ClusterIP
 
-#483行修改镜像地址或dockerhub下载镜像
-repository: docker.io/jettech/kube-webhook-certgen
+#493、494行修改镜像地址或dockerhub下载镜像
+repository: registry.cn-beijing.aliyuncs.com/openacl/kube-webhook-certgen
+tag: v1.5.1
+
+#610、611行修改镜像地址或dockerhub下载镜像
+repository: registry.cn-beijing.aliyuncs.com/openacl/defaultbackend-amd64
+tag: "1.5"
 
 #创建ingress的namespace
 kubectl create ns ingress
